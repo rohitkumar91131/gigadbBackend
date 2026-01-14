@@ -3,7 +3,7 @@ const cors = require('cors');
 const morgan = require('morgan'); 
 const cookieParser = require("cookie-parser"); 
 const systemAuthRoutes = require('./routes/system/authRoutes');
-
+const collectionRoutes = require('./routes/system/collectionRoutes');
 const app = express();
 
 app.use(cors({
@@ -18,7 +18,7 @@ app.use(cookieParser());
 
 
 app.use('/sys/auth', systemAuthRoutes); 
-
+app.use('/sys/collections',collectionRoutes );
 app.get('/', (req, res) => {
     res.json({ message: 'API v1 is working!' });
 });
