@@ -2,6 +2,7 @@ require("dotenv").config();
 const http = require('http'); 
 const app = require("./src/app"); 
 const { buildUserIndex } = require("./src/db/usersDb");
+const { buildCollectionIndex } = require("./src/db/CollectionDb");
 
 const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
@@ -11,6 +12,7 @@ async function startServer() {
         console.log("Initializing Database...");
         
         await buildUserIndex();
+        await buildCollectionIndex();
         
         console.log("Database Indexes Ready.");
 

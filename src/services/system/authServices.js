@@ -55,6 +55,8 @@ exports.login = async (email, password) => {
     return { token, user: { id: user.id, email: user.email } };
 };
 
+
+
 exports.verifyEmail = async (token) => {
     try {
         const decoded = jwt.verify(token, TEMP_SECRET);
