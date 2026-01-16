@@ -6,9 +6,7 @@ const { readRecord, appendRecord } = require("./fileUtils");
 
 const dbDir = path.join(process.cwd(), "databasefiles" , "system");
 const userDbFile = path.join(dbDir, "users.jsonl");
-
-const users_userId_index_Tree = new BPlusTree(10);
-const users_email_index_Tree = new BPlusTree(10);
+const { users_userId_index_Tree ,users_email_index_Tree  } = require("./indexStore");
 
 if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
 if (!fs.existsSync(userDbFile)) fs.writeFileSync(userDbFile, "");

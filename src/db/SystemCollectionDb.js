@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const fsp = require("fs").promises;
+const {fsp , mkdir , writeFile} = require("fs").promises;
 const { readRecord, appendRecord } = require("./fileUtils");
 const readline = require("readline");
 const BPlusTree = require("./BPlusTree"); 
@@ -8,9 +8,9 @@ const { ulid } = require("ulid");
 const {normalizeCollectionName} = require('../utils/normalizeCollectionName');
 const dbDir = path.join(process.cwd(), "databasefiles" , "system");
 const collectionDbFile = path.join(dbDir, "collections.jsonl");
+const { collections_userId_index_Tree , collections_name_index_Tree}  = require("./indexStore");
 
-const collections_userId_index_Tree = new BPlusTree(10);
-const collections_name_index_Tree = new BPlusTree(10);
+
 
 if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
 if (!fs.existsSync(collectionDbFile)) fs.writeFileSync(collectionDbFile, "");
@@ -79,8 +79,15 @@ async function createCollection ( collectionName , userId){
 
        const offset = await appendRecord(collectionDbFile, newCollection);
 
+       const collectionDir = path.join(process.cwd() , "databasefiles" , "data " ,userId) ;
+       console.log(collectionDir)
+       await mkdir(collectionDir , { recursive : true});
+       const collectionFileDir = path.join(process.cwd() ,  "databasefiles" , userId , normalizedCollectionName + ".jsonl");
+       await writeFile(collectionFileDir , "" , { flag : "a"})
+
+
         collections_userId_index_Tree.insertMulti(userId, offset);
-        collections_name_index_Tree.insertMulti(key , offset);
+        collections_name_index_Tree.insert(key , offset);
        
     }
     catch(err){

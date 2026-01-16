@@ -1,4 +1,4 @@
-const collectionDb = require("../../db/CollectionDb");
+const collectionDb = require("../../db/SystemCollectionDb");
 
 exports.addCollection = async ( name ,userId)=>{
     try{
