@@ -1,8 +1,8 @@
 require("dotenv").config();
 const http = require('http'); 
 const app = require("./src/app"); 
-const { buildUserIndex } = require("./src/db/usersDb");
-const { buildCollectionIndex } = require("./src/db/CollectionDb");
+const { buildUserIndex } = require("./src/db/SystemUsersDb");
+const { buildCollectionIndex } = require("./src/db//SystemCollectionDb");
 
 const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);

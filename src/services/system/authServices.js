@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { ulid } = require("ulid");
-const userDb = require("../../db/usersDb")
+const userDb = require("../../db/SystemUsersDb")
 const emailService = require("../../services/system/emailService");
 
 const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";

@@ -3,7 +3,6 @@ function pluralize(word) {
 
   const lower = word.toLowerCase()
 
-  // already plural → do nothing
   if (lower.endsWith("s")) {
     return lower
   }
