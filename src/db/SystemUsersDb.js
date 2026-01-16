@@ -22,8 +22,8 @@ async function buildUserIndex() {
         if (!line.trim()) continue;
         const user = JSON.parse(line);
         
-        users_userId_index_Tree.delete(user.id);
-        users_email_index_Tree.delete(user.email.toLowerCase());
+        // users_userId_index_Tree.delete(user.id);
+        // users_email_index_Tree.delete(user.email.toLowerCase());
 
         users_userId_index_Tree.insert(user.id, offset);
         users_email_index_Tree.insert(user.email.toLowerCase(), offset);
