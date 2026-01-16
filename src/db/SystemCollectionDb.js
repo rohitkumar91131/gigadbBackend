@@ -41,6 +41,7 @@ async function buildCollectionIndex(){
 }
 
 
+
 async function findAllCollectionsByUserId(userId){
     try{
         const offsets = collections_userId_index_Tree.findAllValues(userId);
@@ -82,7 +83,7 @@ async function createCollection ( collectionName , userId){
        const collectionDir = path.join(process.cwd() , "databasefiles" , "data " ,userId) ;
        console.log(collectionDir)
        await mkdir(collectionDir , { recursive : true});
-       const collectionFileDir = path.join(process.cwd() ,  "databasefiles" , userId , normalizedCollectionName + ".jsonl");
+       const collectionFileDir = path.join(process.cwd() ,  "databasefiles" ,"data ", userId , normalizedCollectionName + ".jsonl");
        await writeFile(collectionFileDir , "" , { flag : "a"})
 
 
