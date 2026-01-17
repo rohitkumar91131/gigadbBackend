@@ -74,6 +74,55 @@ exports.insertData = async (req,res ) =>{
     }
 }
 
+exports.updateDataController = async (req, res) => {
+  try {
+    const { collectionName } = req.query;
+    const { collectionId, updatedData } = req.body;
+    const userId = req.userId;
+
+    if (!collectionName) {
+      return res.status(400).json({
+        success: false,
+        msg: "collectionName is required"
+      });
+    }
+
+    if (!collectionId || !updatedData) {
+      return res.status(400).json({
+        success: false,
+        msg: "collectionId and updatedData required"
+      });
+    }
+
+    const result = await userDataServices.updateDataService(
+      collectionId,
+      collectionName,
+      userId,
+      updatedData
+    );
+
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        msg: "Data not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      msg: "Updated Data",
+      data: result
+    });
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({
+      success: false,
+      msg: "Internal Server Error"
+    });
+  }
+};
+
+
 
 exports.deteteDataFromCollection = async (req, res) => {
     try {

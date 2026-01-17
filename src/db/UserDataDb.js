@@ -31,7 +31,13 @@ async function buildUserDataFile(filePath , userId , collectionName){
             if(!line.trim()) continue;
             const data = JSON.parse(line);
             if(data.id && data._deleted !== true){
-                indexTree.insert(data.id , offset);
+                const isExistsInTree = indexTree.find(data.id);
+                if (isExistsInTree !== null){
+                    indexTree.updateValue(data.id ,offset )
+                }
+                else{
+                    indexTree.insert(data.id , offset);
+                }
             }
             if(data.id && data._deleted === true){
                 indexTree.delete(data.id)
@@ -137,6 +143,40 @@ async function insertDataIntoUserCollection ( filePath , userId , collectionName
     }
 }
 
+async function updateDataFromCollection (filePath , collectionId , collectionName , userId , updatedData){
+    try{
+        const normalizedCollectionName = normalizeCollectionName(collectionName);
+        const key = `${userId}:${normalizedCollectionName}`;
+        let indexTree  = userDataIndexes.get(key);
+
+       if(indexTree ===undefined || !indexTree){
+           await buildUserDataFile(filePath , userId , collectionName);
+           indexTree = userDataIndexes.get(key);
+        }
+
+        const oldOffset = indexTree.find(collectionId );
+        if (oldOffset === undefined) return false;
+
+        const updatedRecord = {
+            id : collectionId ,
+            ...updatedData,
+            updatedAt : new Date().toISOString()
+        }
+
+        const updatedOffset = await appendRecord( filePath , updatedRecord );
+        indexTree.delete(collectionId)
+
+        indexTree.insert(collectionId , updatedOffset)
+
+        return true;
+
+    }
+    catch(err){
+        console.log(err)
+        throw new Error("Error in updating "+ err.message)
+    }
+}
+
 async function DeleteDataFromCollection(filePath , collectionId , collectionName , userId ){
     try{
         const normalizedCollectionName = normalizeCollectionName(collectionName);
@@ -149,9 +189,6 @@ async function DeleteDataFromCollection(filePath , collectionId , collectionName
         }
 
         const offset = indexTree.find(collectionId );
-        console.log("Deleting offset ", offset);
-
-
         
         const deletedData = {
             id : collectionId ,
@@ -220,5 +257,6 @@ module.exports = {
     buildUserDataFile,
     insertDataIntoUserCollection,
     seedFakeData,
-    DeleteDataFromCollection
+    DeleteDataFromCollection,
+    updateDataFromCollection
 }
