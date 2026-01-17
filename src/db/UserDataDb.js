@@ -1,7 +1,7 @@
 const fs = require("fs");
 const fsPromises = require("fs/promises");
 const { writeFile } = fsPromises;
-const {appendRecord} = require("./fileUtils")
+const {appendRecord , readRecord} = require("./fileUtils")
 const readline = require("readline");
 const { userDataIndexes ,} = require("./indexStore");
 const { normalizeCollectionName} = require("../utils/normalizeCollectionName");
@@ -30,8 +30,11 @@ async function buildUserDataFile(filePath , userId , collectionName){
         for await(const line of rl ){
             if(!line.trim()) continue;
             const data = JSON.parse(line);
-            if(data.id){
+            if(data.id && data._deleted !== true){
                 indexTree.insert(data.id , offset);
+            }
+            if(data.id && data._deleted === true){
+                indexTree.delete(data.id)
             }
 
             offset += Buffer.byteLength(line, "utf8") + 1; 
@@ -87,7 +90,9 @@ async function readDataFileByPage( filePath , userId , collectionName , pageNumb
                 }
             }
 
-            const data = buffer.toString("utf-8");
+            const data = JSON.parse(buffer.toString("utf-8"));
+           // console.log(data , "\n")
+            if(data._deleted === true) continue;
             result.push(data)
         }
 
@@ -129,6 +134,41 @@ async function insertDataIntoUserCollection ( filePath , userId , collectionName
     }
     catch(err){
         throw new Error("error in inserting ", err.message)
+    }
+}
+
+async function DeleteDataFromCollection(filePath , collectionId , collectionName , userId ){
+    try{
+        const normalizedCollectionName = normalizeCollectionName(collectionName);
+        const key = `${userId}:${normalizedCollectionName}`;
+        let indexTree  = userDataIndexes.get(key);
+
+       if(indexTree ===undefined || !indexTree){
+           await buildUserDataFile(filePath , userId , collectionName);
+           indexTree = userDataIndexes.get(key);
+        }
+
+        const offset = indexTree.find(collectionId );
+        console.log("Deleting offset ", offset);
+
+
+        
+        const deletedData = {
+            id : collectionId ,
+            _deleted : true,
+            ts: Date.now()
+        }
+
+        const deletedOffset = await appendRecord(filePath , deletedData);
+
+        indexTree.delete(collectionId ) ;
+
+        return true;
+
+    }
+    catch(err){
+        console.log(err)
+        throw new Error("Error in deleting data from collection ", err.message)
     }
 }
 
@@ -179,5 +219,6 @@ module.exports = {
     readDataFileByPage,
     buildUserDataFile,
     insertDataIntoUserCollection,
-    seedFakeData
+    seedFakeData,
+    DeleteDataFromCollection
 }

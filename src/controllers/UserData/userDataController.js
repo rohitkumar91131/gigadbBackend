@@ -74,6 +74,39 @@ exports.insertData = async (req,res ) =>{
     }
 }
 
+
+exports.deteteDataFromCollection = async (req, res) => {
+    try {
+        const { collectionName } = req.query;
+        const { collectionId } = req.body;
+        const userId = req.userId;
+
+        const deleted = await userDataServices.deleteDataService(
+            userId,
+            collectionId,
+            collectionName
+        );
+
+        if (!deleted) {
+            return res.status(404).json({
+                success: false,
+                msg: "Record not found"
+            });
+        }
+
+        res.json({
+            success: true,
+            msg: "Deleted successfully"
+        });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            msg: err.message
+        });
+    }
+};
+
+
 exports.seedCollection = async (req, res) => {
   try {
     const { collectionName, count } = req.query;
