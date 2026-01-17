@@ -24,7 +24,10 @@ async function readRecord(filePath, offset) {
             }
             position += bytesRead;
         }
-        return JSON.parse(buffer.toString('utf8'));
+        const str = buffer.toString('utf8').trim();
+        if (!str) return null;
+        return JSON.parse(str);
+
     } finally {
         if (fd) await fd.close();
     }

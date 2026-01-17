@@ -1,7 +1,7 @@
 const { ulid } = require("ulid");
 const {readDataFileByPage}  = require("../../db/UserDataDb");
 const {normalizeCollectionName } = require("../../utils/normalizeCollectionName");
-const { insertDataIntoUserCollection} = require("../../db/UserDataDb");
+const { insertDataIntoUserCollection , DeleteDataFromCollection} = require("../../db/UserDataDb");
 const path = require("path")
 const {seedFakeData}  = require("../../db/UserDataDb")
 
@@ -33,6 +33,26 @@ exports.insertDataService = async (collectionName , userId , data) =>{
         throw new Error("Error in inserting service ", err.message)
     }
 }
+
+exports.deleteDataService = async (userId, collectionId, collectionName) => {
+    const filePath = path.join(
+        process.cwd(),
+        "databasefiles",
+        "data ",
+        userId,
+        normalizeCollectionName(collectionName) + ".jsonl"
+    );
+
+    const deleted = await DeleteDataFromCollection(
+        filePath,
+        collectionId,
+        collectionName,
+        userId
+    );
+
+    return deleted;
+};
+
 
 exports.seedCollectionService = async (userId, collectionName, count) => {
   const filePath = path.join(

@@ -5,7 +5,9 @@ const {isAuthenticated} = require("../../middlewares/authMiddleware")
 
 router.get("/",isAuthenticated , userDataController.getDataByPage);
 
-router.post("/insert" ,isAuthenticated , userDataController.insertData)
+router.post("/" ,isAuthenticated , userDataController.insertData);
+
+router.delete("/" , isAuthenticated , userDataController.deteteDataFromCollection)
 
 router.post(
   "/seed",
