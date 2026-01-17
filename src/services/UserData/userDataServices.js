@@ -1,7 +1,7 @@
 const { ulid } = require("ulid");
 const {readDataFileByPage}  = require("../../db/UserDataDb");
 const {normalizeCollectionName } = require("../../utils/normalizeCollectionName");
-const { insertDataIntoUserCollection , DeleteDataFromCollection} = require("../../db/UserDataDb");
+const { insertDataIntoUserCollection , DeleteDataFromCollection , updateDataFromCollection} = require("../../db/UserDataDb");
 const path = require("path")
 const {seedFakeData}  = require("../../db/UserDataDb")
 
@@ -33,6 +33,42 @@ exports.insertDataService = async (collectionName , userId , data) =>{
         throw new Error("Error in inserting service ", err.message)
     }
 }
+
+exports.updateDataService = async (      
+      collectionId,
+      collectionName,
+      userId,
+      updatedData) => {
+  try {
+    const normalizedCollectionName = normalizeCollectionName(collectionName);
+
+    const filePath = path.join(
+      process.cwd(),
+      "databasefiles",
+      "data ",
+      userId,
+      normalizedCollectionName + ".jsonl"
+    );
+
+    const isUpdated = await updateDataFromCollection(
+      filePath,
+      collectionId,
+      normalizedCollectionName,
+      userId,
+      updatedData
+    );
+
+    if (!isUpdated) return null;
+
+    return {
+      id: collectionId,
+      ...updatedData
+    };
+  } catch (err) {
+    throw new Error("Error in updating service " + err.message);
+  }
+};
+
 
 exports.deleteDataService = async (userId, collectionId, collectionName) => {
     const filePath = path.join(

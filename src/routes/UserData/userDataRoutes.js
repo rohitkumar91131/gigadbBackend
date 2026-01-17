@@ -7,7 +7,10 @@ router.get("/",isAuthenticated , userDataController.getDataByPage);
 
 router.post("/" ,isAuthenticated , userDataController.insertData);
 
-router.delete("/" , isAuthenticated , userDataController.deteteDataFromCollection)
+router.delete("/" , isAuthenticated , userDataController.deteteDataFromCollection);
+
+router.put("/",isAuthenticated , userDataController.updateDataController);
+
 
 router.post(
   "/seed",

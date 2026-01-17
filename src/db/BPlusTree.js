@@ -52,6 +52,21 @@ class BPlusTree{
         return { upKey : upkey  , right}
     }
 
+    updateValue(key, newValue) {
+    const leaf = this.findLeaf(this.root, key);
+    if (!leaf) return false;
+
+    for (let i = 0; i < leaf.keys.length; i++) {
+        if (leaf.keys[i].key === key) {
+            leaf.keys[i].value = newValue;
+            return true;
+        }
+    }
+
+    return false;
+    }
+
+
 
     insertMulti(key , value){
         const leaf = this.findLeaf(this.root , key);
