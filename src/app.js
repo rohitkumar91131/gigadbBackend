@@ -6,6 +6,8 @@ const systemAuthRoutes = require('./routes/system/authRoutes');
 const collectionRoutes = require('./routes/system/collectionRoutes');
 const userDataRoutes = require("./routes/UserData/userDataRoutes");
 const apiKeyRoutes = require("./routes/apiKey.routes");
+const apiUserDataRoutes = require('./routes/apiCollectins.route')
+
 const app = express();
 
 app.use(cors({
@@ -23,10 +25,13 @@ app.use('/sys/auth', systemAuthRoutes);
 app.use('/sys/collections',collectionRoutes );
 app.use("/db/collections" , userDataRoutes)
 app.use("/apikey",apiKeyRoutes);
+app.use("/api/v1/db/collections", apiUserDataRoutes)
+
 
 app.get('/', (req, res) => {
     res.json({ message: 'API v1 is working!' });
 });
+
 
 app.use((req, res, next) => {
     res.status(404).json({ message: 'Route not found' });
