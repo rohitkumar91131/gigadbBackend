@@ -139,7 +139,7 @@ async function insertDataIntoUserCollection ( filePath , userId , collectionName
 
         const exists = collections_name_index_Tree.find(key);
         console.log(exists)
-        if (!exists){
+        if (exists === null || exists === undefined){
             await createCollection(collectionName , userId);
         }
 
@@ -179,7 +179,7 @@ async function updateDataFromCollection (filePath , collectionId , collectionNam
 
         const exists = collections_name_index_Tree.find(key);
         console.log(exists)
-        if (!exists){
+        if (exists === null || exists === undefined){
             await createCollection(collectionName , userId);
         }
 
@@ -262,7 +262,7 @@ async function seedFakeData(filePath, userId, collectionName, count) {
 
     const exists = collections_name_index_Tree.find(key);
         //console.log(exists)
-    if(!exists){
+    if(exists === null || exists === undefined){
             await createCollection(collectionName , userId);
     }
 
