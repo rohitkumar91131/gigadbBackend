@@ -13,6 +13,11 @@ class BPlusTree{
         this.order = order;
     }
 
+    clear() {
+        this.root = new Node(true)
+    }
+
+
     insert(key , value){
         const node = this.root;
         const result = this._insert(node , key , value);
@@ -116,6 +121,30 @@ class BPlusTree{
         }
         return false;
     }
+    
+    deleteAValueFromValues(key, value){
+    const leaf = this.findLeaf(this.root, key)
+    if(!leaf) return false
+
+    for(let i = 0; i < leaf.keys.length; i++){
+        if(leaf.keys[i].key === key){
+            const arr = leaf.keys[i].value
+            const idx = arr.indexOf(value)
+            if(idx === -1) return false
+
+            arr.splice(idx, 1)
+
+            if(arr.length === 0){
+                this.delete(key)
+            }
+
+            return true
+        }
+    }
+
+    return false
+}
+
 
     find(key){
         return this._find(this.root , key);
