@@ -3,12 +3,13 @@ const {readDataFileByPage}  = require("../../db/UserDataDb");
 const {normalizeCollectionName } = require("../../utils/normalizeCollectionName");
 const { insertDataIntoUserCollection , DeleteDataFromCollection , updateDataFromCollection} = require("../../db/UserDataDb");
 const path = require("path")
-const {seedFakeData}  = require("../../db/UserDataDb")
+const {seedFakeData}  = require("../../db/UserDataDb");
+const { mkdir, writeFile } = require("fs/promises");
 
 exports.findDataByPage =async (userId , collectionName , pageNumber , pageLimit ) =>{
     try{
         const normalizedCollectionName = normalizeCollectionName(collectionName)
-        const filePath = path.join(process.cwd() ,  "databasefiles" ,"data ", userId , normalizedCollectionName + ".jsonl");
+        const filePath = path.join(process.cwd() ,  "databasefiles" ,"data", userId , normalizedCollectionName + ".jsonl");
         const data = await readDataFileByPage( filePath , userId , collectionName , pageNumber , pageLimit );
         return data;
     }
@@ -24,12 +25,17 @@ exports.insertDataService = async (collectionName , userId , data) =>{
             id : ulid(),
             ...data
         }
-        const filePath = path.join(process.cwd() ,  "databasefiles" ,"data ", userId , normalizeCollectionName(collectionName) + ".jsonl");
+        const filePath = path.join(process.cwd() ,  "databasefiles" ,"data", userId , normalizeCollectionName(collectionName) + ".jsonl");
+        const fileDir = path.join(process.cwd() ,  "databasefiles" ,"data", userId);
+
+        await mkdir(fileDir , {recursive : true})
+        await writeFile(filePath , "" , { flag : "a"})
 
         await insertDataIntoUserCollection(filePath , userId , collectionName , newData);
         return newData
     }
     catch(err){
+        console.log(err)
         throw new Error("Error in inserting service ", err.message)
     }
 }
@@ -45,7 +51,7 @@ exports.updateDataService = async (
     const filePath = path.join(
       process.cwd(),
       "databasefiles",
-      "data ",
+      "data",
       userId,
       normalizedCollectionName + ".jsonl"
     );
@@ -74,7 +80,7 @@ exports.deleteDataService = async (userId, collectionId, collectionName) => {
     const filePath = path.join(
         process.cwd(),
         "databasefiles",
-        "data ",
+        "data",
         userId,
         normalizeCollectionName(collectionName) + ".jsonl"
     );
@@ -94,7 +100,7 @@ exports.seedCollectionService = async (userId, collectionName, count) => {
   const filePath = path.join(
     process.cwd(),
     "databasefiles",
-    "data ",
+    "data",
     userId,
     normalizeCollectionName(collectionName) + ".jsonl"
   );

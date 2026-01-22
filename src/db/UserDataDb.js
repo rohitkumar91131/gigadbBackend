@@ -3,10 +3,11 @@ const fsPromises = require("fs/promises");
 const { writeFile } = fsPromises;
 const {appendRecord , readRecord} = require("./fileUtils")
 const readline = require("readline");
-const { userDataIndexes ,} = require("./indexStore");
+const { userDataIndexes ,collections_name_index_Tree} = require("./indexStore");
 const { normalizeCollectionName} = require("../utils/normalizeCollectionName");
 const BPlusTree = require("./BPlusTree");
-const generateFakeDoc  = require("../utils/seedFakeData")
+const generateFakeDoc  = require("../utils/seedFakeData");
+const {createCollection}  = require("./SystemCollectionDb");
 
 async function buildUserDataFile(filePath , userId , collectionName){
     try{
@@ -56,6 +57,7 @@ async function buildUserDataFile(filePath , userId , collectionName){
     }
 
 }
+
 
 async function readDataFileByPage( filePath , userId , collectionName , pageNumber , pageLimit){
     try{
@@ -127,7 +129,7 @@ async function insertDataIntoUserCollection ( filePath , userId , collectionName
         const key = `${userId}:${normalizedCollectionName}`;
         let indexTree  = userDataIndexes.get(key);
 
-        if(indexTree === undefined){
+        if(indexTree === undefined || indexTree === null){
             await buildUserDataFile(filePath ,userId , collectionName )
         }
         else{
@@ -135,10 +137,17 @@ async function insertDataIntoUserCollection ( filePath , userId , collectionName
 
         }
 
+        const exists = collections_name_index_Tree.find(key);
+        console.log(exists)
+        if (!exists){
+            await createCollection(collectionName , userId);
+        }
+
 
         return true
     }
     catch(err){
+        console.log(err)
         throw new Error("error in inserting ", err.message)
     }
 }
@@ -166,7 +175,14 @@ async function updateDataFromCollection (filePath , collectionId , collectionNam
         const updatedOffset = await appendRecord( filePath , updatedRecord );
         indexTree.delete(collectionId)
 
-        indexTree.insert(collectionId , updatedOffset)
+        indexTree.insert(collectionId , updatedOffset);
+
+        const exists = collections_name_index_Tree.find(key);
+        console.log(exists)
+        if (!exists){
+            await createCollection(collectionName , userId);
+        }
+
 
         return true;
 
@@ -243,6 +259,13 @@ async function seedFakeData(filePath, userId, collectionName, count) {
 
       stream.end(resolve);
     });
+
+    const exists = collections_name_index_Tree.find(key);
+        //console.log(exists)
+    if(!exists){
+            await createCollection(collectionName , userId);
+    }
+
 
 
     return true;

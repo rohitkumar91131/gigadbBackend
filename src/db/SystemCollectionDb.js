@@ -80,10 +80,10 @@ async function createCollection ( collectionName , userId){
 
        const offset = await appendRecord(collectionDbFile, newCollection);
 
-       const collectionDir = path.join(process.cwd() , "databasefiles" , "data " ,userId) ;
+       const collectionDir = path.join(process.cwd() , "databasefiles" , "data" ,userId) ;
        console.log(collectionDir)
        await mkdir(collectionDir , { recursive : true});
-       const collectionFileDir = path.join(process.cwd() ,  "databasefiles" ,"data ", userId , normalizedCollectionName + ".jsonl");
+       const collectionFileDir = path.join(process.cwd() ,  "databasefiles" ,"data", userId , normalizedCollectionName + ".jsonl");
        await writeFile(collectionFileDir , "" , { flag : "a"})
 
 
